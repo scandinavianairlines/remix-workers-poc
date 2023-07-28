@@ -1,0 +1,15 @@
+node_modules
+
+
+/.cache
+/build
+/public/build
+.env
+# Yarn Integrity file & Yarn 2
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
