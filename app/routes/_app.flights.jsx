@@ -22,6 +22,14 @@ export function loader() {
   });
 }
 
+export const workerAction = async ({ request }) => {
+  console.log('hola')
+}
+
+export const workerLoader = async ({ request }) => {
+  console.log('hola')
+}
+
 export async function action({ request }) {
   const formData = await request.formData();
   const flight = formData.get('flightId');
