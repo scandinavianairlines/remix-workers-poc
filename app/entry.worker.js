@@ -1,6 +1,7 @@
 /// <reference lib="WebWorker" />
-
-import { PrecacheHandler } from "@remix-pwa/sw";
+// NOTE: if we import from @remix-pwa/sw, the bundle will be too big ass is not tree-shakable apparently
+import { PrecacheHandler } from '@remix-pwa/sw/lib/message/precacheHandler.js';
+import * as build from '@remix-pwa/build/worker'
 
 let self;
 
