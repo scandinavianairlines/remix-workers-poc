@@ -1,13 +1,12 @@
 
 const esbuild = require("esbuild");
 const { flatRoutes } = require("@remix-run/dev/dist/config/flat-routes");
-const { nodeModulesPolyfillPlugin } = require('esbuild-plugins-node-modules-polyfill');
-const { getRouteModuleExports } = require('@remix-run/dev/dist/compiler/utils/routeExports');
-const { readConfig, findConfig } = require('@remix-run/dev/dist/config');
+const { readConfig } = require('@remix-run/dev/dist/config');
 const { emptyModulesPlugin } = require('@remix-run/dev/dist/compiler/plugins/emptyModules');
 const path = require("path");
 const entryModulePlugin = require('./plugins/entry-module.js');
 const routesModulesPlugin = require("./plugins/routes-module.js");
+const sideEffectsPlugin = require("./plugins/side-effects.js");
 
 console.log(flatRoutes("app"));
 
@@ -35,12 +34,14 @@ readConfig(path.resolve('./'), 'production').then(remixConfig => {
       entryModulePlugin(config),
       // for each route imported with`?worker` suffix this plugin will only keep the `workerAction` and `workerLoader` exports
       routesModulesPlugin(config),
+      // we need to tag the user entry.worker as sideEffect so esbuild will not remove it
+      sideEffectsPlugin(),
     ]
     /** @type {import("esbuild").BuildOptions} */
     const esbuildOptions = {
       entryPoints,
-
-      outdir: './public/build', // ctx.config.assetsBuildDirectory,
+      globalName: 'remix',
+      outdir: './public', // ctx.config.assetsBuildDirectory,
       platform: 'browser',
       format: 'esm',
       bundle: true,
@@ -54,9 +55,9 @@ readConfig(path.resolve('./'), 'production').then(remixConfig => {
       mainFields: ['browser', 'module', 'main'],
       treeShaking: true,
       minify: false,
-      chunkNames: '_shared/sw/[name]-[hash]',
-      assetNames: '_assets/sw/[name]-[hash]',
-      jsx: 'preserve',
+      // chunkNames: '_shared/sw/[name]-[hash]',
+      // assetNames: '_assets/sw/[name]-[hash]',
+      // jsx: 'preserve',
       plugins,
       supported: {
         'import-meta': true,

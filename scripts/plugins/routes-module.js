@@ -28,7 +28,9 @@ function routesModulesPlugin(config) {
       let contents = 'module.exports = {};';
       if (theExports.length !== 0) {
         const spec = `{ ${theExports.join(', ')} }`;
-        contents = `export ${spec} from ${JSON.stringify(`./${file}`)};`;
+        contents = `export ${spec} from ${JSON.stringify(`./${file}`)};
+          export const hasWorkerAction = ${theExports.includes('workerAction')};
+          export const hasWorkerLoader = ${theExports.includes('workerLoader')}`;
       }
       return {
         contents: contents,

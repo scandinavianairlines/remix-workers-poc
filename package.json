@@ -3,7 +3,7 @@
   "sideEffects": false,
   "scripts": {
     "build": "run-s build:*",
-    "dev": "run-p dev:*",
+    "dev": "run-p dev:remix dev:poc",
     "start": "remix-serve build",
     "typecheck": "tsc",
     "build:remix": "cross-env NODE_ENV=production remix build",

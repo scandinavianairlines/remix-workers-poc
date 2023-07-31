@@ -20,5 +20,5 @@ startTransition(() => {
 
 loadServiceWorker({
   scope: '/',
-  serviceWorkerUrl: '/entry.worker.js',
+  serviceWorkerUrl: '/service-worker2.js',
 });

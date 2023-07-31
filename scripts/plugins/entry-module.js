@@ -43,8 +43,7 @@ function entryModulePlugin(config) {
       ${createRouteList(routes)}
     ];
 
-    import * as entry from  '${config.appDirectory}/entry.worker.js';
-    console.log(entry) // TODO we need a way mark the entry.worker.js as non-side-effect free to force importing it
+    import * as entryWorker from  '${config.appDirectory}/entry.worker.js?user';
     `;
 
       return {

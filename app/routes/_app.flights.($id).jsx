@@ -1,5 +1,7 @@
-import { redirect } from '@remix-run/node';
+import { redirect, json } from '@remix-run/node';
 import { useLoaderData, Form, useNavigation } from '@remix-run/react';
+
+// `_app.flights.[$id].jsx` -- -> `/flights/:id`
 
 export function loader() {
   return json({
@@ -36,7 +38,7 @@ export async function action({ request }) {
 
   console.log(flight, 'here is the flight id');
 
-  return redirect('/confirmation');
+  return redirect('/');
 }
 
 export default function FlightsRoute() {
