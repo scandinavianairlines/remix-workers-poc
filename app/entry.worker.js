@@ -1,11 +1,10 @@
 /// <reference lib="WebWorker" />
 // NOTE: if we import from @remix-pwa/sw, the bundle will be too big ass is not tree-shakable apparently
-import { PrecacheHandler } from '@remix-pwa/sw/lib/message/precacheHandler.js';
+import { PrecacheHandler } from "@remix-pwa/sw/lib/message/precacheHandler.js";
 
 const PAGES = "page-cache";
 const DATA = "data-cache";
 const ASSETS = "assets-cache";
-const STATIC_ASSETS = ["/build/", "/icons/", "/favicon.ico"];
 
 const precacheHandler = new PrecacheHandler({
   dataCacheName: DATA,
@@ -13,12 +12,9 @@ const precacheHandler = new PrecacheHandler({
   assetCacheName: ASSETS,
 });
 
-// let self;
-
-// export const defaultFetchHandler = (event) => {
-//   //
-//   console.log(event);
-// }
+export const defaultFetchHandler = (event) => {
+  return fetch(event.request.clone());
+};
 
 // export const register = (self) => {
 self.addEventListener("install", (event) => {
@@ -33,6 +29,8 @@ self.addEventListener("message", (event) => {
   event.waitUntil(precacheHandler.handle(event));
 });
 
+// NOTE: If the user declares something like the above, then all the interceptors
+// functionality won't work any more and must be managed by the end user.
 // self.addEventListener("fetch", (event) => {
 //   console.log("entry")
 //   event.respondWith(defaultHandler(event));

@@ -1,8 +1,9 @@
 import { json } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
 
 export function loader() {
   return json({
-    test: true
+    test: true,
   });
 }
 
@@ -13,5 +14,5 @@ export default function Page() {
       <h1>Test</h1>
       <p>{test}</p>
     </article>
-  )
+  );
 }

@@ -1,33 +1,69 @@
-import * as build from '@remix-pwa/build/magic'
-// import { matchLoaderRequest, isLoaderRequest } from '@remix-pwa/sw'
+import * as build from "@remix-pwa/build/magic";
+import { isLoaderRequest } from "@remix-pwa/sw/lib/fetch/match.js";
+import { isMethod } from "@remix-pwa/sw/lib/fetch/fetch.js";
+import { json } from "@remix-run/router";
 
 // if the user export a `defaultFetchHandler` inside the entry.worker.js, we use that one as default handler
-const defaultHandler = build.entry.module.defaultFetchHandler || ((event) => event.responseWith(fetch(event.request.clone())));
+const defaultHandler =
+  build.entry.module.defaultFetchHandler ||
+  ((event) => fetch(event.request.clone()));
 
-console.log(build.routes)
-// build.entry.module.register(self)
-// TODO add fetch event listener per each route here
-self.addEventListener("fetch", (event) => {
-  console.log(build.routes)
-  console.log(event)
-  console.log(event.request.url)
-  console.log(event.request.url.searchParams.get('_data'))
-  const url = new URL(event.request.url)
-  const data = url.searchParams.get('_data')
-  // loaders & actions --> GET ?_data={route.id} & POST ?_data={route.id}
+function isActionRequest(request) {
+  const url = new URL(request.url);
+  return (
+    isMethod(request, ["post", "delete", "put", "patch"]) &&
+    url.searchParams.get("_data")
+  );
+}
 
-  const route = build.routes.find(route => route.id === data)
-  console.log(route)
-  if (route.hasWorkerLoader) {
-    const handler = route.module.workerLoader
-    return event.respondWith(handler(event))
-  } else {
-    return event.respondWith(defaultHandler(event))
+function isResponse(value) {
+  return (
+    value != null &&
+    typeof value.status === "number" &&
+    typeof value.statusText === "string" &&
+    typeof value.headers === "object" &&
+    typeof value.body !== "undefined"
+  );
+}
+
+self.addEventListener(
+  "fetch",
+  /**
+   * @param {FetchEvent} event
+   * @returns {Promise<Response>}
+   */
+  (event) => {
+    const url = new URL(event.request.url);
+    if (isLoaderRequest(event.request)) {
+      const _data = url.searchParams.get("_data");
+      const route = build.routes.find((route) => route.id === _data);
+
+      if (route.module?.workerLoader) {
+        return event.respondWith(
+          (async () => {
+            // Create worker wrapper HoF that handles the response.
+            const response = await route.module.workerLoader(event);
+            // Here we should add logic to support redirects and deferred responses.
+            return isResponse(response) ? response : json(response);
+          })()
+        );
+      }
+    }
+
+    if (isActionRequest(event.request)) {
+      const _data = url.searchParams.get("_data");
+      const route = build.routes.find((route) => route.id === _data);
+
+      if (route.module?.workerAction) {
+        return event.respondWith(
+          (async () => {
+            const response = await route.module.workerAction(event);
+            return isResponse(response) ? response : json(response);
+          })()
+        );
+      }
+    }
+
+    return event.respondWith(defaultHandler(event));
   }
-});
-
-
-
-
-
-console.log(build.routes)
+);

@@ -19,6 +19,6 @@ startTransition(() => {
 });
 
 loadServiceWorker({
-  scope: '/',
-  serviceWorkerUrl: '/service-worker2.js',
+  scope: "/",
+  serviceWorkerUrl: "/service-worker.js",
 });

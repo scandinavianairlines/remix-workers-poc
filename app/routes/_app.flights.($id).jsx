@@ -1,5 +1,6 @@
-import { redirect, json } from '@remix-run/node';
-import { useLoaderData, Form, useNavigation } from '@remix-run/react';
+import { redirect, json } from "@remix-run/node";
+import { json as wJson, redirect as wRedirect } from "@remix-run/router";
+import { useLoaderData, Form, useNavigation } from "@remix-run/react";
 
 // `_app.flights.[$id].jsx` -- -> `/flights/:id`
 
@@ -7,44 +8,68 @@ export function loader() {
   return json({
     flights: [
       {
-        date: '2023-07-01T23:30:00',
-        arrival: 'EZE',
-        departure: 'ARN',
+        date: "2023-07-01T23:30:00",
+        arrival: "EZE",
+        departure: "ARN",
         flightId: 1,
-        flightNumber: 'SK0000',
+        flightNumber: "SK0000",
       },
       {
-        date: '2023-07-06T07:35:00',
-        arrival: 'ARN',
-        departure: 'EZE',
+        date: "2023-07-06T07:35:00",
+        arrival: "ARN",
+        departure: "EZE",
         flightId: 2,
-        flightNumber: 'SK0001',
+        flightNumber: "SK0001",
       },
     ],
   });
 }
 
 export const workerAction = async ({ request }) => {
-  console.log('hola')
-}
+  const r = request.clone();
+  const formData = await r.formData();
+  console.log(Object.fromEntries(formData.entries()), "client form data");
 
-export const workerLoader = async ({ request }) => {
-  console.log('hola')
-}
+  return fetch(request.clone());
+};
+
+export const workerLoader = async () => {
+  // can't use same `json` here because is only for node
+  return wJson({
+    flights: [
+      {
+        date: "2023-10-01T11:30:00",
+        arrival: "BRC",
+        departure: "ARN",
+        flightId: 3,
+        flightNumber: "SK0020",
+      },
+      {
+        date: "2023-10-06T19:35:00",
+        arrival: "ARN",
+        departure: "BRC",
+        flightId: 4,
+        flightNumber: "SK0021",
+      },
+    ],
+  });
+};
 
 export async function action({ request }) {
   const formData = await request.formData();
-  const flight = formData.get('flightId');
+  const flight = formData.get("flightId");
 
-  console.log(flight, 'here is the flight id');
+  console.log(flight, "here is the flight id");
 
-  return redirect('/');
+  return redirect("/server-redirect");
 }
 
 export default function FlightsRoute() {
   const { flights } = useLoaderData();
   const navigation = useNavigation();
-  const loading = navigation.state !== 'idle';
+  const loading = navigation.state !== "idle";
+
+  console.log(flights, "flights");
 
   return (
     <div>
@@ -53,7 +78,7 @@ export default function FlightsRoute() {
       <section>
         <Form method="post">
           <fieldset disabled={loading}>
-            {flights.map(flight => (
+            {flights.map((flight) => (
               <div key={flight.flightId}>
                 <label>
                   <input type="radio" name="flightId" value={flight.flightId} />
@@ -62,11 +87,8 @@ export default function FlightsRoute() {
               </div>
             ))}
           </fieldset>
-          <button
-            type="submit"
-            disabled={loading}
-          >
-            {loading ? 'Loading...' : 'Submit'}
+          <button type="submit" disabled={loading}>
+            {loading ? "Loading..." : "Submit"}
           </button>
         </Form>
       </section>

@@ -2331,7 +2331,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@remix-run/router@npm:1.7.2":
+"@remix-run/router@npm:1.7.2, @remix-run/router@npm:latest":
   version: 1.7.2
   resolution: "@remix-run/router@npm:1.7.2"
   checksum: ea43bb662f1f5c93965989b1667fb6e8a301cb69c44341ee92c81cb15ea685b494168e5905593b5777d59058f1455b4b58083d5b895f04382e49362e420d7af4
@@ -9263,6 +9263,7 @@ __metadata:
     "@remix-run/eslint-config": ^1.19.1
     "@remix-run/node": ^1.19.1
     "@remix-run/react": ^1.19.1
+    "@remix-run/router": latest
     "@remix-run/serve": ^1.19.1
     "@types/react": ^18.0.35
     "@types/react-dom": ^18.0.11
