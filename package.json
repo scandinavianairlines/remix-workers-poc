@@ -8,7 +8,7 @@
     "typecheck": "tsc",
     "build:remix": "cross-env NODE_ENV=production remix build",
     "build:worker": "esbuild ./app/entry.worker.js --outfile=./public/entry.worker.js --minify --bundle --platform=node --format=esm --define:process.env.NODE_ENV='\"production\"'",
-    "dev:poc": "node scripts/build.js",
+    "dev:poc": "nodemon --config ./nodemon.json scripts/build.js",
     "dev:remix": "cross-env NODE_ENV=development remix dev"
   },
   "dependencies": {
@@ -33,6 +33,7 @@
     "esbuild": "^0.18.17",
     "esbuild-plugins-node-modules-polyfill": "^1.3.0",
     "eslint": "^8.38.0",
+    "nodemon": "^3.0.1",
     "typescript": "^5.0.4"
   },
   "engines": {
