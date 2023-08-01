@@ -80,15 +80,5 @@ readConfig(path.resolve("./"), "production").then((remixConfig) => {
       metafile: true,
       write: true,
     })
-    .then((m) => m.rebuild());
-
-  compiler
-    .then(() => {
-      console.log("done");
-      process.exit(0);
-    })
-    .catch((err) => {
-      console.error(err);
-      process.exit(1);
-    });
+    .then((m) => m.watch()).then((m) => console.log('watching changes'));
 });
