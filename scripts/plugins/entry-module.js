@@ -1,3 +1,4 @@
+"use strict";
 const FILTER_REGEX = /@remix-pwa\/build\/magic$/;
 const NAMESPACE = "entry-module";
 

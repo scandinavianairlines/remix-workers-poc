@@ -1,3 +1,4 @@
+"use strict";
 const esbuild = require("esbuild");
 const { flatRoutes } = require("@remix-run/dev/dist/config/flat-routes");
 const { readConfig } = require("@remix-run/dev/dist/config");
