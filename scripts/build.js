@@ -1,6 +1,6 @@
 "use strict";
 const esbuild = require("esbuild");
-const { flatRoutes } = require("@remix-run/dev/dist/config/flat-routes");
+const minimist = require("minimist");
 const { readConfig } = require("@remix-run/dev/dist/config");
 const {
   emptyModulesPlugin,
@@ -9,8 +9,10 @@ const path = require("path");
 const entryModulePlugin = require("./plugins/entry-module.js");
 const routesModulesPlugin = require("./plugins/routes-module.js");
 const sideEffectsPlugin = require("./plugins/side-effects.js");
-
-console.log(flatRoutes("app"));
+const { NODE_ENV } = process.env;
+const TIME_LABEL = "💿 Built in";
+const MODE = NODE_ENV === "production" ? "production" : "development";
+const { watch } = minimist(process.argv.slice(2));
 
 readConfig(path.resolve("./"), "production").then((remixConfig) => {
   // NOTE: in case of need to merge new configurations only for workers we can do it here
@@ -74,11 +76,29 @@ readConfig(path.resolve("./"), "production").then((remixConfig) => {
     return esbuildOptions;
   }
 
-  const compiler = esbuild
+  console.time(TIME_LABEL);
+
+  esbuild
     .context({
       ...createEsbuildConfig({ config: remixConfig }),
       metafile: true,
       write: true,
     })
-    .then((m) => m.watch()).then((m) => console.log('watching changes'));
+    .then((context) => {
+      console.log(`Building service-worker app in ${MODE} mode`);
+      return context
+        .watch()
+        .then(() => {
+          console.timeEnd(TIME_LABEL);
+          if (!watch) {
+            return context.dispose();
+          }
+          console.log("Watching for changes in the service-worker");
+        })
+        .catch(console.error);
+    })
+    .catch((error) => {
+      console.error(error);
+      process.exit(1);
+    });
 });

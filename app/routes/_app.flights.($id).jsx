@@ -1,5 +1,5 @@
 import { redirect, json } from "@remix-run/node";
-import { json as wJson, redirect as wRedirect, defer } from "@remix-run/router";
+import { redirect as wRedirect, defer } from "@remix-run/router";
 import { useLoaderData, Form, useNavigation, Await } from "@remix-run/react";
 import { Suspense } from "react";
 

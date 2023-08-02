@@ -7,8 +7,8 @@
     "start": "remix-serve build",
     "typecheck": "tsc",
     "build:remix": "cross-env NODE_ENV=production remix build",
-    "build:worker": "esbuild ./app/entry.worker.js --outfile=./public/entry.worker.js --minify --bundle --platform=node --format=esm --define:process.env.NODE_ENV='\"production\"'",
-    "dev:poc": "node scripts/build.js",
+    "build:worker": "NODE_ENV=production node scripts/build.js",
+    "dev:worker": "NODE_ENV=development node scripts/build.js --watch",
     "dev:remix": "cross-env NODE_ENV=development remix dev"
   },
   "dependencies": {
@@ -33,6 +33,7 @@
     "esbuild": "^0.18.17",
     "esbuild-plugins-node-modules-polyfill": "^1.3.0",
     "eslint": "^8.38.0",
+    "minimist": "^1.2.8",
     "typescript": "^5.0.4"
   },
   "engines": {
