@@ -6,7 +6,7 @@ const FILTER_REGEX = /\?worker$/;
 const NAMESPACE = "routes-module";
 
 /**
- * @param {import('@remix-run/dev').ResolvedRemixConfig} config
+ * @param {import('../utils/config').ResolvedWorkerConfig} config
  * @returns {import('esbuild').Plugin} Esbuild plugin
  */
 function routesModulesPlugin(config) {

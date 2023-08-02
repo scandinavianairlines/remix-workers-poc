@@ -1,7 +1,7 @@
 "use strict";
 const esbuild = require("esbuild");
 const minimist = require("minimist");
-const { readConfig } = require("@remix-run/dev/dist/config");
+const { readConfig } = require("./utils/config.js");
 const {
   emptyModulesPlugin,
 } = require("@remix-run/dev/dist/compiler/plugins/emptyModules");
@@ -14,19 +14,33 @@ const TIME_LABEL = "💿 Built in";
 const MODE = NODE_ENV === "production" ? "production" : "development";
 const { watch } = minimist(process.argv.slice(2));
 
-readConfig(path.resolve("./"), "production").then((remixConfig) => {
-  // NOTE: in case of need to merge new configurations only for workers we can do it here
-
-  //const confFile = require(findConfig(path.resolve('./'), 'remix.config', ['.js', '.mjs', '.cjs',]));
-  //const remixConfig = { ...config, ...confFile };
-
-  function createEsbuildConfig({ config }) {
-    const entryPoints = {
+/**
+ * Creates the esbuild config object.
+ * @param {import('./utils/config.js').ResolvedWorkerConfig} config
+ * @returns {import("esbuild").BuildOptions}
+ */
+function createEsbuildConfig(config) {
+  return {
+    entryPoints: {
       "service-worker": "./scripts/service-worker.js",
-    };
-
-    /** @type {Array<import("esbuild").Plugin>} */
-    const plugins = [
+    },
+    globalName: "remix",
+    outdir: config.workerBuildDirectory,
+    platform: "browser",
+    format: "esm",
+    bundle: true,
+    logLevel: "error",
+    splitting: true,
+    sourcemap: false,
+    // As pointed out by https://github.com/evanw/esbuild/issues/2440, when tsconfig is set to
+    // `undefined`, esbuild will keep looking for a tsconfig.json recursively up. This unwanted
+    // behavior can only be avoided by creating an empty tsconfig file in the root directory.
+    // tsconfig: ctx.config.tsconfigPath,
+    mainFields: ["browser", "module", "main"],
+    treeShaking: true,
+    minify: config.workerMinify,
+    chunkNames: "_shared/sw/[name]-[hash]",
+    plugins: [
       // nodeModulesPolyfillPlugin(),
       emptyModulesPlugin({ config }, /\.server(\.[jt]sx?)?$/),
       // assuming that we dont need react at all in the worker (we dont want to SWSR for now at least)
@@ -45,42 +59,21 @@ readConfig(path.resolve("./"), "production").then((remixConfig) => {
       routesModulesPlugin(config),
       // we need to tag the user entry.worker as sideEffect so esbuild will not remove it
       sideEffectsPlugin(),
-    ];
-    /** @type {import("esbuild").BuildOptions} */
-    const esbuildOptions = {
-      entryPoints,
-      globalName: "remix",
-      outdir: "./public", // ctx.config.assetsBuildDirectory,
-      platform: "browser",
-      format: "esm",
-      bundle: true,
-      logLevel: "error",
-      splitting: true,
-      sourcemap: false,
-      // As pointed out by https://github.com/evanw/esbuild/issues/2440, when tsconfig is set to
-      // `undefined`, esbuild will keep looking for a tsconfig.json recursively up. This unwanted
-      // behavior can only be avoided by creating an empty tsconfig file in the root directory.
-      // tsconfig: ctx.config.tsconfigPath,
-      mainFields: ["browser", "module", "main"],
-      treeShaking: true,
-      minify: false,
-      // chunkNames: '_shared/sw/[name]-[hash]',
-      // assetNames: '_assets/sw/[name]-[hash]',
-      // jsx: 'preserve',
-      plugins,
-      supported: {
-        "import-meta": true,
-      },
-    };
+    ],
+    supported: {
+      "import-meta": true,
+    },
+  };
+}
 
-    return esbuildOptions;
-  }
-
+readConfig(path.resolve("./"), "production").then((remixConfig) => {
   console.time(TIME_LABEL);
-
+  console.log(remixConfig, 2232);
+  // @TODO: Support for multiple entry.worker.js files.
+  // We should run the esbuild for each entry.worker.js file.
   esbuild
     .context({
-      ...createEsbuildConfig({ config: remixConfig }),
+      ...createEsbuildConfig(remixConfig),
       metafile: true,
       write: true,
     })

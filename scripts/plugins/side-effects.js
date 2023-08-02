@@ -2,7 +2,7 @@
 const FILTER_REGEX = /\?user$/;
 
 /**
- * @param {import('@remix-run/dev').ResolvedRemixConfig} config
+ * @param {import('../utils/config').ResolvedWorkerConfig} config
  * @returns {import('esbuild').Plugin} Esbuild plugin
  */
 function sideEffectsPlugin() {

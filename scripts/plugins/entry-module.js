@@ -30,7 +30,7 @@ function createRouteList(routes) {
 }
 
 /**
- * @param {import('@remix-run/dev').ResolvedRemixConfig} config
+ * @param {import('../utils/config').ResolvedWorkerConfig} config
  * @returns {import('esbuild').Plugin} Esbuild plugin
  */
 function entryModulePlugin(config) {
@@ -51,7 +51,7 @@ function entryModulePlugin(config) {
       ${createRouteList(routes)}
     ];
 
-    import * as entryWorker from  '${config.appDirectory}/entry.worker.js?user';
+    import * as entryWorker from  '${config.worker}?user';
     export const entry = { module: entryWorker };
     `;
 
