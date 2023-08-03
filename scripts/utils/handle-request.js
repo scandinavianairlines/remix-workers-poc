@@ -7,10 +7,7 @@ import {
   isResponse,
   json,
 } from "@remix-run/server-runtime/dist/responses.js";
-import {
-  isRouteErrorResponse,
-  UNSAFE_DEFERRED_SYMBOL,
-} from "@remix-run/router";
+import { isRouteErrorResponse } from "@remix-run/router";
 import { isLoaderRequest } from "@remix-pwa/sw/lib/fetch/match.js";
 import {
   createArgumentsFrom,
@@ -26,13 +23,12 @@ export function handleRequest({
   errorHandler,
   loadContext,
 }) {
-  const request = event.request.clone();
-  const url = new URL(request.url);
+  const url = new URL(event.request.url);
   const _data = url.searchParams.get("_data");
   const route = routes.find((route) => route.id === _data);
 
   try {
-    if (isLoaderRequest(request) && route.module?.workerLoader) {
+    if (isLoaderRequest(event.request) && route.module?.workerLoader) {
       return handleLoader({
         event,
         loader: route.module.workerLoader,
@@ -41,7 +37,7 @@ export function handleRequest({
       }).then(responseHandler);
     }
 
-    if (isActionRequest(request) && route.module?.workerAction) {
+    if (isActionRequest(event.request) && route.module?.workerAction) {
       return handleAction({
         event,
         action: route.module.workerAction,
@@ -56,9 +52,9 @@ export function handleRequest({
   }
 
   return defaultHandler({
-    request,
-    params: getURLParams(request),
-    context: { ...loadContext, event },
+    request: event.request,
+    params: getURLParams(event.request),
+    context: loadContext,
   });
 }
 
@@ -162,6 +158,7 @@ function responseHandler(response) {
 
   // Mark all successful responses with a header so we can identify in-flight
   // network errors that are missing this header
-  response.headers.set("X-Remix-Response", "yes");
+  !response.headers.has("X-Remix-Response") &&
+    response.headers.set("X-Remix-Response", "yes");
   return response;
 }

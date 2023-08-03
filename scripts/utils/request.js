@@ -47,7 +47,7 @@ export function createArgumentsFrom({ event, loadContext }) {
   return {
     request,
     params,
-    context: { ...loadContext, event },
+    context: loadContext,
   };
 }
 

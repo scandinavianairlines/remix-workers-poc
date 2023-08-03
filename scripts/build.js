@@ -68,7 +68,6 @@ function createEsbuildConfig(config) {
 
 readConfig(path.resolve("./"), "production").then((remixConfig) => {
   console.time(TIME_LABEL);
-  console.log(remixConfig, 2232);
   // @TODO: Support for multiple entry.worker.js files.
   // We should run the esbuild for each entry.worker.js file.
   esbuild
