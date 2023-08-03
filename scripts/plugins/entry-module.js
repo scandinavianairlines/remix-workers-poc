@@ -44,7 +44,6 @@ function entryModulePlugin(config) {
     const onLoad = () => {
       const routes = Object.values(config.routes);
       const contents = `
-
     ${createRouteImports(routes, config.appDirectory)}
 
     export const routes = [

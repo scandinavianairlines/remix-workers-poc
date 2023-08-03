@@ -8,10 +8,10 @@ const path = require("path");
 const EXTENSIONS = [".js", ".mjs", ".cjs"];
 
 /**
- * @typedef {import('@remix-run/dev').AppConfig & { worker: string, workerMinify: boolean, workerBuildDirectory: string }} WorkerConfig
+ * @typedef {import('@remix-run/dev').AppConfig & { worker: string, workerName: string, workerMinify: boolean, workerBuildDirectory: string }} WorkerConfig
  */
 /**
- * @typedef {import('@remix-run/dev').ResolvedRemixConfig & { worker?: string, workerMinify?: boolean, workerBuildDirectory?: string }} ResolvedWorkerConfig
+ * @typedef {import('@remix-run/dev').ResolvedRemixConfig & { worker?: string, workerName?: string, workerMinify?: boolean, workerBuildDirectory?: string }} ResolvedWorkerConfig
  */
 
 /**
@@ -33,6 +33,7 @@ async function readConfig(remixRoot, mode) {
     ...remixConfig,
     worker:
       workerConfig.worker ?? `${remixConfig.appDirectory}/entry.worker.js`,
+    workerName: workerConfig.workerName ?? "service-worker",
     workerMinify: workerConfig.workerMinify ?? false,
     workerBuildDirectory:
       workerConfig.workerBuildDirectory ?? path.resolve("./public"),

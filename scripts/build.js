@@ -22,7 +22,7 @@ const { watch } = minimist(process.argv.slice(2));
 function createEsbuildConfig(config) {
   return {
     entryPoints: {
-      "service-worker": "./scripts/service-worker.js",
+      [config.workerName]: "./scripts/service-worker.internal.js",
     },
     globalName: "remix",
     outdir: config.workerBuildDirectory,
