@@ -77,6 +77,13 @@ The _service worker_ can be configured in the `remix.config.js` file. The follow
 - **workerMinify**: Whether to minify the _service worker_ file. Defaults to `false`.
 - **workerBuildDirectory**: The directory to build the _service worker_ file in. Defaults to `public/`.
 
+## Considerations
+
+- The compiler removes all dependencies related to `react`, `react-dom` and any `@remix-run/*` packages intended to be used in an specific environment like `cloudflare`, `node`, `deno`, etc
+- Remix methods like `json`, `defer` and `redirect` needs to be imported from `@remix-run/router` otherwise it won't work.
+- ⚠️ The first render (if you are online and don't have any cache around), will always go to the server. There is no way to intercept this request as the _service worker_ is not activated yet.
+- ⚠️ The _service worker_ runs on a background thread and can only [access Server Worker API's](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API).
+
 ## Project setup
 
 This project was bootstrapped with [Remix](https://remix.run), uses [Yarn](https://yarnpkg.com) as its package manager and [Node.js](https://nodejs.org) as its runtime.

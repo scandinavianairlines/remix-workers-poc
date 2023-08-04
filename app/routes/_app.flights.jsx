@@ -50,6 +50,7 @@ export const workerLoader = async ({ context }) => {
     const [serverResult, clientResult] = await Promise.allSettled([
       // NOTE: If the user decides to use the server loader, must use the `context.event.request` object instead of `request`.
       // This is because we strip the `_data` and `index` from the request object just to follow what Remix does.
+      // Doing fetch(context.event.request) is the same as using `fetchFromServer()`.
       fetchFromServer()
         .then((response) => response.json())
         .then(({ flights }) => flights),
